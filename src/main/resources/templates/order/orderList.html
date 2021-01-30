@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"/>
+<body>
+<div th:replace="fragments/bodyHeader :: bodyHeader"/>
+<div class="container pt-3">
+    <div class="p-1 text-center">
+        <h4 class="mb-3">주문 목록</h4>
+    </div>
+    <div>
+        <div class="container">
+            <form th:object="${orderSearch}" class="form-inline">
+                <div class="form-group mb-2">
+                    <input type="text" th:field="*{memberName}" class="formcontrol"
+                           placeholder="회원명"/>
+                </div>
+                <div class="form-group mx-sm-1 mb-2">
+                    <select th:field="*{orderStatus}" class="form-control">
+                        <option value="">주문상태</option>
+                        <option th:each=
+                                        "status : ${T(jpabook.jpashop.domain.OrderStatus).values()}"
+                                th:value="${status}"
+                                th:text="${status}">option
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">검색</button>
+            </form>
+        </div>
+        <div class="container">
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th style="width:  8%">#</th>
+                    <th style="width:  12%">회원명</th>
+                    <th style="width:  18%">상품명</th>
+                    <th style="width:  10%">가격</th>
+                    <th style="width:  10%">수량</th>
+                    <th style="width:  10%">상태</th>
+                    <th style="width:  15%">일시</th>
+                    <th style="width:  5%">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${orderStat.count}"></td>
+                    <td th:text="${order.member.name}"></td>
+                    <td th:text="${order.orderItems[0].item.name}"></td>
+                    <td th:text="${order.orderItems[0].orderPrice}"></td>
+                    <td th:text="${order.orderItems[0].count}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td th:text="${#temporals.format(order.orderDate,'yyyy-MM-dd HH:mm')}"></td>
+                    <td>
+                        <a th:if="${order.status.name() == 'ORDER'}" href="#"
+                           th:href="'javascript:cancel('+${order.id}+')'"
+                           class="btn btn-danger">CANCEL</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div th:replace="fragments/footer :: footer"/>
+</div> <!-- /container -->
+</body>
+<script>
+function cancel(id) {
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "/orders/" + id + "/cancel");
+    document.body.appendChild(form);
+    form.submit();
+}
+
+
+</script>
+</html>
